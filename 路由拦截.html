@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app"></div>
+</body>
+<script src="./js/vue.js"></script>
+<script src="./js/router.js"></script>
+<script>
+    const login = {
+        template: `
+    <div class="login">
+         <input type="text" v-model='un' placeholder="账号">
+         <input type="password" v-model='pd' placeholder="密码">
+         <input type="button" @click='fn' value="登录">
+
+    </div>
+   
+    `,
+        data() {
+            return {
+                un: '',
+                pd: ''
+            }
+        },
+        methods: {
+            fn() {
+                this.$router.push('/info');
+            }
+        },
+        watch: {
+            un: {
+                handler() {
+                    localStorage.setItem('userName', this.un);
+                }
+            },
+            pd: {
+                handler() {
+                    localStorage.setItem('password', this.pd);
+                }
+            }
+        },
+        // beforeRouteLeave (to, from, next) {
+        //     if(this.un&&this.pd){
+        //         next();
+        //     }else{
+        //         alert('账号密码不能为空')
+        //     }
+        // }
+    }
+    const info = {
+        template: `
+        <div class="info">
+            <h3>个人信息</h3>
+            <p>小敏</p>    
+        </div>
+        `,
+        beforeRouteEnter(to, from, next) {
+            let un = localStorage.getItem('userName');
+            let pd = localStorage.getItem('password');
+            if(un&&pd){
+                next();
+            }else{
+                alert('密码账号不能为空');
+            }
+        }
+    }
+    const router = new VueRouter({
+        routes: [
+            {
+                path: '/login',
+                component: login
+            },
+            {
+                path: '/info',
+                component: info
+            },
+            {
+                path: '/',
+                redirect: '/login'
+            }
+        ]
+    })
+    let App = {
+        template: `
+        <div id="app">
+           <router-view />
+        </div>
+        `
+    }
+    let vm = new Vue({
+        el: '#app',
+        render: h => h(App),
+        components: { App },
+        router
+    })
+</script>
+
+</html>
